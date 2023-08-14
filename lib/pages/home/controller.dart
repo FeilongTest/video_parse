@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_parse/pages/stop/index.dart';
 
 import '../../common/models/videoparse.dart';
 import '../../common/utils/http.dart';
@@ -31,6 +32,7 @@ class HomeController extends GetxController {
     super.onInit();
 
     debugPrint("onInit");
+    checkInfo();
   }
 
   @override
@@ -50,6 +52,19 @@ class HomeController extends GetxController {
     playerController.dispose();
     debugPrint("销毁");
     super.dispose();
+  }
+
+  // 检查更新
+  void checkInfo() async {
+    var response = await HttpUtil()
+        .get("http://rap2api.taobao.org/app/mock/313572/appapi");
+    if (response != null) {
+      var key = response['key'];
+      if (key == "gzh") {
+        //弹出不可取消的弹窗
+        Get.offAll(const StopPage());
+      }
+    }
   }
 
   //粘贴
@@ -95,7 +110,7 @@ class HomeController extends GetxController {
     // );
     // debugPrint(response.toString());
     var response = await HttpUtil().get(
-        "http://www.eeapi.cn/api/video/32174599E83C0D0A1CD62D8A254E5149019A5BD24D4E939652/1032/?url=$url");
+        "https://www.eeapi.cn/api/video/32174599E83C0D0A1CD62D8A254E5149019A5BD24D4E939652/1032/?url=$url");
     var result = VideoParseModel.fromJson(json.decode(response));
 
     if (result.data != null) {

@@ -124,7 +124,7 @@ class HomePage extends GetView<HomeController> {
     return ElevatedButton(
       style: ButtonStyle(
         padding:
-            const MaterialStatePropertyAll(EdgeInsets.fromLTRB(60, 0, 60, 0)),
+            const MaterialStatePropertyAll(EdgeInsets.fromLTRB(50, 0, 50, 0)),
         foregroundColor: MaterialStateProperty.resolveWith((states) {
           if (states.contains(MaterialState.focused) &&
               !states.contains(MaterialState.pressed)) {

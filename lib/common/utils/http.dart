@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:video_parse/common/index.dart';
 
 class HttpUtil {
   static final HttpUtil _instance = HttpUtil._internal();
@@ -59,8 +60,7 @@ class HttpUtil {
         // 这样请求将被中止并触发异常，上层catchError会被调用。
       },
       onError: (e, handler) {
-        debugPrint(
-            'error.exceptionType -> ${e.type}, error.message -> ${e.message}');
+        toastInfo(msg: "网络请求出错,error.message -> ${e.error.toString()}");
         return handler.next(e); //continue
         // 如果你想完成请求并返回一些自定义数据，可以resolve 一个`Response`,如`handler.resolve(response)`。
         // 这样请求将会被终止，上层then会被调用，then中返回的数据将是你的自定义response.

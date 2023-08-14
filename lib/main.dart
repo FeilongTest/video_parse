@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,14 +17,10 @@ void main() {
 appInit() async {
   // 初始化 flutter 引擎
   WidgetsFlutterBinding.ensureInitialized();
-
+  await permission();
   //初始化
   Get.put<GlobalService>(GlobalService());
-
-  if (!await Permission.storage.request().isGranted) {
-    toastInfo(msg: "没有存储权限!");
-    return;
-  }
+  await [Permission.storage].request();
 
   //启动
   runApp(const MyApp());
@@ -33,6 +30,20 @@ appInit() async {
     SystemUiOverlayStyle systemUiOverlayStyle =
         const SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  }
+}
+
+permission() async {
+  //android13 权限问题 https://developer.android.com/training/data-storage/shared/media?hl=zh-cn#storage-permission
+  //参考2：https://github.com/Baseflow/flutter-permission-handler/issues/995
+  //android 13版本无需申请对应权限即可操作自身文件夹
+  DeviceInfoPlugin plugin = DeviceInfoPlugin();
+  AndroidDeviceInfo android = await plugin.androidInfo;
+  if (android.version.sdkInt < 33) {
+    if (!await Permission.storage.request().isGranted) {
+      toastInfo(msg: "请手动打开存储权限");
+      await openAppSettings();
+    }
   }
 }
 
