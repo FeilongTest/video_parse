@@ -7,19 +7,38 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_parse/pages/home/state.dart';
 import 'package:video_parse/pages/stop/index.dart';
 
 import '../../common/models/videoparse.dart';
 import '../../common/utils/http.dart';
 import '../../common/widgets/toast.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with GetTickerProviderStateMixin {
   // url的控制器
   final TextEditingController urlController = TextEditingController();
 
   final FijkPlayer playerController = FijkPlayer();
 
   var currentVideoTrueUrl = "";
+
+  //获取屏幕宽度
+  final screenWidth = Get.width - 60;
+
+//=====
+//scale 为缩放动画
+  late final AnimationController scaleAnimationController;
+
+  late Animation<double> scaleAnimation;
+
+  //fade 为逐渐消失的动画
+  late final AnimationController fadeAnimationController;
+
+  late Animation<double> fadeAnimation;
+
+//=====
+
+  final state = HomeState();
 
   _initData() {
     update(["video_parse"]);
@@ -30,6 +49,29 @@ class HomeController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+
+    scaleAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
+
+    scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(scaleAnimationController)
+      ..addStatusListener((status) async {
+        if (status == AnimationStatus.completed) {
+          await scaleAnimationController.reverse();
+          fadeAnimationController.forward();
+          download();
+        }
+      });
+
+    fadeAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 400));
+
+    fadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(fadeAnimationController);
 
     debugPrint("onInit");
     checkInfo();
@@ -50,6 +92,9 @@ class HomeController extends GetxController {
   void dispose() {
     urlController.dispose();
     playerController.dispose();
+
+    scaleAnimationController.dispose();
+    fadeAnimationController.dispose();
     debugPrint("销毁");
     super.dispose();
   }
@@ -57,7 +102,7 @@ class HomeController extends GetxController {
   // 检查更新
   void checkInfo() async {
     var response = await HttpUtil()
-        .get("http://rap2api.taobao.org/app/mock/313572/appapi");
+        .get("http://rap2api.taobao.org/app/mock/313572/appapi3");
     if (response != null) {
       var key = response['key'];
       if (key == "gzh") {
@@ -152,9 +197,12 @@ class HomeController extends GetxController {
     //目录现在一定存在 开始下载文件
     String savePath =
         "$dirPath${Platform.pathSeparator}${DateTime.now().millisecondsSinceEpoch}.mp4";
-    toastInfo(msg: "正在下载...");
+    state.progress = 0.0;
+    state.downloading = true;
+
     await HttpUtil().dio.download(currentVideoTrueUrl, savePath,
         onReceiveProgress: (count, total) {
+      state.progress = screenWidth * (count / total);
       debugPrint("${(count / total * 100).toStringAsFixed(0)}%");
     });
     final result = await ImageGallerySaver.saveFile(savePath);
@@ -163,5 +211,18 @@ class HomeController extends GetxController {
     } else {
       toastInfo(msg: "下载完成,但是保存到相册失败了!当前下载目录为:$savePath");
     }
+    state.downloading = false;
+    //fade动画倒转
+    fadeAnimationController.reverse();
+  }
+
+  //按钮点击事件
+  void btnDownloadClicked() async {
+    //防止动画开始后点击
+    if (state.downloading) {
+      return;
+    }
+    //触发按钮动画 完成时会自动触发下载事件
+    scaleAnimationController.forward();
   }
 }

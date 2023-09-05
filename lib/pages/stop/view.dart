@@ -1,10 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'index.dart';
 
 class StopPage extends GetView<StopController> {
   const StopPage({Key? key}) : super(key: key);
+
+  Widget buildQunDialog() {
+    return AlertDialog(
+      title: const Text(
+        "温馨提示",
+        style: TextStyle(fontSize: 16),
+      ),
+      content: const Text("加入软件反馈群,第一时间获取最新软件!"),
+      actions: [
+        InkWell(
+          onTap: () async {
+            String url =
+                "mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3DqdddsIvoYE62_VOx10qGLThHQTYcYmH3";
+            if (await canLaunchUrlString(url)) {
+              launchUrlString(url);
+            }
+          },
+          child: const Text("确定"),
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        InkWell(
+          onTap: () {
+            if (Get.isDialogOpen == true) {
+              Get.back();
+            }
+          },
+          child: const Text("取消"),
+        )
+      ],
+    );
+  }
 
   // 主视图
   Widget _buildView(BuildContext context) {
@@ -14,7 +48,7 @@ class StopPage extends GetView<StopController> {
         Image.asset('assets/no-connection.gif'),
         Container(
           height: MediaQuery.of(context).size.height / 2.5,
-          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
           decoration: BoxDecoration(
             color: Colors.grey.shade50,
             borderRadius: const BorderRadius.only(

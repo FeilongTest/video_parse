@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  fl_umeng:
+    dependency: "direct main"
+    description:
+      name: fl_umeng
+      sha256: "37a6fe39ea276c3cb4270c0f16c7d9e9d352b766367ef32c0ecec5fd74055f4a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.0"
   flutter:
     dependency: "direct main"
     description: flutter

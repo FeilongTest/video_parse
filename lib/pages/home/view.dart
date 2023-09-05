@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_parse/common/index.dart';
 import 'package:video_parse/global.dart';
+import 'package:video_parse/pages/home/widgets/new_btn.dart';
 
 import '../../common/values/index.dart';
 import 'index.dart';
@@ -65,7 +66,7 @@ class HomePage extends GetView<HomeController> {
               ],
             ),
           ),
-          _downloadBtn(),
+          const NewBtnWidget(),
           _player(),
         ],
       ),

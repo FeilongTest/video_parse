@@ -10,7 +10,13 @@ class StopController extends GetxController {
     update(["stop"]);
   }
 
-  void onTap() {}
+  Future<void> onTap() async {
+    String url =
+        "mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3DqdddsIvoYE62_VOx10qGLThHQTYcYmH3";
+    if (await canLaunchUrlString(url)) {
+      launchUrlString(url);
+    }
+  }
 
   // @override
   // void onInit() {

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:fl_umeng/fl_umeng.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,6 +22,12 @@ appInit() async {
   //初始化
   Get.put<GlobalService>(GlobalService());
   await [Permission.storage].request();
+
+  // 注册友盟 统计 性能检测
+  await FlUMeng().init(
+      androidAppKey: '64f744c08efadc41dcd56878',
+      iosAppKey: '',
+      channel: 'Umeng');
 
   //启动
   runApp(const MyApp());
