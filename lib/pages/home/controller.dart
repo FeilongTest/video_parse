@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_parse/common/api/api.dart';
 import 'package:video_parse/pages/home/state.dart';
 import 'package:video_parse/pages/stop/index.dart';
 
@@ -102,7 +104,7 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
   // 检查更新
   void checkInfo() async {
     var response = await HttpUtil()
-        .get("http://rap2api.taobao.org/app/mock/313572/appapi3");
+        .get("http://rap2api.taobao.org/app/mock/313572/appapi4");
     if (response != null) {
       var key = response['key'];
       if (key == "gzh") {
@@ -153,31 +155,31 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     // var response = await HttpUtil().get(
     //   'https://tool.icy8.net/api.parser/index?share=${urlController.text}',
     // );
-    // debugPrint(response.toString());
-    var response = await HttpUtil().get(
-        "https://www.eeapi.cn/api/video/32174599E83C0D0A1CD62D8A254E5149019A5BD24D4E939652/1032/?url=$url");
-    var result = VideoParseModel.fromJson(json.decode(response));
 
-    if (result.data != null) {
-      String videoUrl = result.data!.video.toString();
-      videoUrl = Uri.decodeComponent(videoUrl).toString();
-      currentVideoTrueUrl = videoUrl;
+    API api = API();
+    var result = await api.parseUrl(url);
+    if (result != null) {
+      if (result.data != null) {
+        String videoUrl = result.data!.content!.down.toString();
+        videoUrl = Uri.decodeComponent(videoUrl).toString();
+        currentVideoTrueUrl = videoUrl;
 
-      await playerController.reset();
-      if (videoUrl.contains("bilivideo.com")) {
-        //设置header https://fijkplayer.befovy.com/docs/zh/faq.html#gsc.tab=0
-        await playerController.setOption(FijkOption.formatCategory, "headers",
-            'Host: data.bilibili.com\r\nReferer: https://www.bilibili.com/\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203');
+        await playerController.reset();
+        if (videoUrl.contains("bilivideo.com")) {
+          //设置header https://fijkplayer.befovy.com/docs/zh/faq.html#gsc.tab=0
+          await playerController.setOption(FijkOption.formatCategory, "headers",
+              'Host: data.bilibili.com\r\nReferer: https://www.bilibili.com/\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203');
+        }
+        await playerController
+            .setDataSource(videoUrl, autoPlay: true)
+            .catchError((e) {
+          Get.snackbar("setDataSource error: ", e);
+        });
+      } else {
+        toastInfo(msg: "解析出错！${result.msg.toString()}");
       }
-      await playerController
-          .setDataSource(videoUrl, autoPlay: true)
-          .catchError((e) {
-        Get.snackbar("setDataSource error: ", e);
-      });
-
-      debugPrint(response.toString());
     } else {
-      toastInfo(msg: "解析出错！${result.msg.toString()}");
+      toastInfo(msg: "请求接口出错!");
     }
   }
 

@@ -25,7 +25,7 @@ appInit() async {
 
   // 注册友盟 统计 性能检测
   await FlUMeng().init(
-      androidAppKey: '64f744c08efadc41dcd56878',
+      androidAppKey: '65d4a29495b14f599d283c1f',
       iosAppKey: '',
       channel: 'Umeng');
 

@@ -1,120 +1,103 @@
 // To parse this JSON data, do
 //
 //     final videoParseModel = videoParseModelFromJson(jsonString);
-
 class VideoParseModel {
-  int? status;
   int? code;
-  String? msg;
-  DateTime? empty;
   Data? data;
-  String? type;
+  String? msg;
 
   VideoParseModel({
-    this.status,
     this.code,
-    this.msg,
-    this.empty,
     this.data,
-    this.type,
+    this.msg,
   });
 
   factory VideoParseModel.fromJson(Map<String, dynamic> json) =>
       VideoParseModel(
-        status: json["status"],
         code: json["code"],
-        msg: json["msg"],
-        empty: json["解析时间"] == null ? null : DateTime.parse(json["解析时间"]),
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
-        type: json["type"],
+        msg: json["msg"],
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
         "code": code,
-        "msg": msg,
-        "解析时间": empty?.toIso8601String(),
         "data": data?.toJson(),
-        "type": type,
+        "msg": msg,
       };
 }
 
 class Data {
-  String? name;
-  String? avatar;
-  String? title;
-  String? cover;
-  String? downloadImage;
-  String? url;
-  String? video;
-  String? down;
-  Music? music;
-  int? duration;
-  bool? bigFile;
+  Content? content;
+  String? type;
 
   Data({
-    this.name,
-    this.avatar,
-    this.title,
-    this.cover,
-    this.downloadImage,
-    this.url,
-    this.video,
-    this.down,
-    this.music,
-    this.duration,
-    this.bigFile,
+    this.content,
+    this.type,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        name: json["Name"],
-        avatar: json["avatar"],
-        title: json["title"],
-        cover: json["cover"],
-        downloadImage: json["download_image"],
-        url: json["url"],
-        video: json["video"],
-        down: json["down"],
-        music: json["music"] == null ? null : Music.fromJson(json["music"]),
-        duration: json["duration"],
-        bigFile: json["bigFile"],
+        content:
+            json["content"] == null ? null : Content.fromJson(json["content"]),
+        type: json["type"],
       );
 
   Map<String, dynamic> toJson() => {
-        "Name": name,
-        "avatar": avatar,
-        "title": title,
-        "cover": cover,
-        "download_image": downloadImage,
-        "url": url,
-        "video": video,
-        "down": down,
-        "music": music?.toJson(),
-        "duration": duration,
-        "bigFile": bigFile,
+        "content": content?.toJson(),
+        "type": type,
       };
 }
 
-class Music {
-  String? author;
-  String? avatar;
+class Content {
+  bool? bigFile;
+  String? cover;
+  String? down;
+  String? downloadImage;
+  int? duration;
+  List<dynamic>? images;
+  String? iv;
+  String? title;
   String? url;
+  String? video;
 
-  Music({
-    this.author,
-    this.avatar,
+  Content({
+    this.bigFile,
+    this.cover,
+    this.down,
+    this.downloadImage,
+    this.duration,
+    this.images,
+    this.iv,
+    this.title,
     this.url,
+    this.video,
   });
 
-  factory Music.fromJson(Map<String, dynamic> json) => Music(
-        author: json["author"],
-        avatar: json["avatar"],
+  factory Content.fromJson(Map<String, dynamic> json) => Content(
+        bigFile: json["bigFile"],
+        cover: json["cover"],
+        down: json["down"],
+        downloadImage: json["downloadImage"],
+        duration: json["duration"],
+        images: json["images"] == null
+            ? []
+            : List<dynamic>.from(json["images"]!.map((x) => x)),
+        iv: json["iv"],
+        title: json["title"],
         url: json["url"],
+        video: json["video"],
       );
 
   Map<String, dynamic> toJson() => {
-        "author": author,
-        "avatar": avatar,
+        "bigFile": bigFile,
+        "cover": cover,
+        "down": down,
+        "downloadImage": downloadImage,
+        "duration": duration,
+        "images":
+            images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
+        "iv": iv,
+        "title": title,
         "url": url,
+        "video": video,
       };
 }
